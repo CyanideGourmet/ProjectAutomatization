@@ -1,0 +1,19 @@
+//  press - holds down a key
+//  release - stops holding a key
+//  stroke - instantly presses and releases a key
+//  cPress - presses an array of keys at the same time (should be separated by space)
+//  cRelease - releases an array of keys at the same time (should be separated by space)
+//  chain - instantly presses an array of keys and then instantly releases them (should be separated by space)
+//  type - types a string of keys, doesn't pick up special keys like shift
+press lShift
+press a
+release a
+release lShift
+press lShift
+stroke b
+release lShift
+cPress lShift c 2
+cRelease lShift c 2
+chain lShift d
+type stop
+stroke enter
