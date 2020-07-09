@@ -38,6 +38,19 @@ class BehaviorPattern():
         while(len(self.executionQueue) > 0):
             self.executeNext()
 
+class BehaviorListener():
+    def __init__(self):
+        self.listening = False
+        pass
+    def targetScriptFile(self, scriptName):
+        pass
+    def startListen(self):
+        self.listening = True
+        pass
+    def stopListen(self):
+        self.listening = False
+        pass
+    pass
 
 if __name__ == "__main__":
     executor = BehaviorPattern()
