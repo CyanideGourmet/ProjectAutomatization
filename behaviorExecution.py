@@ -1,71 +1,49 @@
-from pynput.keyboard import Key, Controller as Key, KeyboardController
-from pynput.mouse import Button, Controller as Button, MouseController
+from pynput.keyboard import Controller as KeyboardController
+from pynput.mouse import Controller as MouseController
 from time import sleep
 from collections import deque
 
 import behavior
 
-class BehaviorExecutor():
-    #Class methods
-    def __init__(self):
-        self.keyboard = KeyboardController()
-        self.mouse = MouseController()
-        self.executionQueue = None
-        self.queuePosition = 0
-
-    def execute(self, delay = 0):
-        sleep(delay)
-        for element in self.executionQueue:
-            if len(element) == 2:
-                self.keyboard.press(element[0])
-                self.keyboard.release(element[0])
-            else:
-                for i in range(len(element)-1):
-                    self.keyboard.press(element[i])
-                for i in range(len(element)-1):
-                    self.keyboard.release(element[i])
-            sleep(element[-1])
-        self.executionQueue = None
-
-    def executeNext(self, delay = 0):
-        sleep(delay)
-        element = self.executionQueue.popleft()
-        if len(element) == 2:
-            self.keyboard.press(element[0])
-            self.keyboard.release(element[0])
-        else:
-            for i in range(len(element)-1):
-                self.keyboard.press(element[i])
-            for i in range(len(element)-1):
-                self.keyboard.release(element[i])
-        sleep(element[-1])
-
-    def setScript(self, scriptName):
-        file = open(scriptName + ".autoscript")
-        readlines = [ line for line in file.readlines() if not line.startswith("//") ]
-        readlines = [ line.split(' ') if '\n' not in line else line[:-1].split(' ') for line in readlines ]
-        for i in range(len(readlines)):
-            if len(readlines[i][0]) > 1:
-                readlines[i][0] = specialKeysDict[readlines[i][0]]
-            readlines[i][-1] = float(readlines[i][-1])
-        file.close()
-        self.executionQueue = deque(readlines)
-        
-    def getQueue(self):
-        return self.executionQueue
-
 class BehaviorPattern():
     def __init__(self, behaviorList = [ behavior.SingleKeyPress(),  behavior.SingleKeyRelease(), behavior.SingleKeyStroke(), behavior.KeyChainPress(), behavior.KeyChainRelease(), behavior.KeyChain(), behavior.TypeText() ]):
-        self.behaviorList = behaviorList
+        behaviorCommandNames = [ behav._COMMAND for behav in behaviorList ]
+        self.behaviors = dict(zip(behaviorCommandNames, behaviorList))
+        self.keyboard = KeyboardController()
+        self.mouse = MouseController()
     def loadScript(self, scriptName):
-        
+        file = open(scriptName + ".autoscript")
+        readlines = [ line for line in file.readlines() if not line.startswith("//") and not line.startswith('\n') ]
+        readlines = [ line if '\n' not in line else line[:-1] for line in readlines ]
+        file.close()
+        self.executionQueue = deque(readlines)
+    def executeNext(self, delay = 0):
+        executionStatement = self.executionQueue.popleft()
+        command, executionStatement = executionStatement.split(' ', 1)
+        try:
+            delayAfter = float(executionStatement[-1])
+        except ValueError:
+            delayAfter = 0
+        else:
+            executionStatement = executionStatement.rsplit(' ', 1)[0]
+        try:
+            chosenBehavior = self.behaviors[command]
+        except KeyError:
+            print("Behavior for " + command + " missing!")
+            raise KeyError
+        chosenBehavior.execute(executionStatement, self.keyboard, self.mouse)
+        sleep(delayAfter)
+    def execute(self, delay = 0):
+        sleep(delay)
+        while(len(self.executionQueue) > 0):
+            self.executeNext()
 
 
 if __name__ == "__main__":
-    executor = BehaviorExecutor()
+    executor = BehaviorPattern()
     print("What's the name of the script?")
     scriptName = input()
-    executor.setScript(scriptName)
+    executor.loadScript(scriptName)
     print("\nScript will execute in 3 seconds...")
     for i in range(3):
         print(3 - i)

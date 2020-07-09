@@ -12,8 +12,9 @@ release lShift
 press lShift
 stroke b
 release lShift
-cPress lShift c 2
-cRelease lShift c 2
+cPress lShift rAlt c 2
+cRelease lShift rAlt c
 chain lShift d
+stroke enter
 type stop
 stroke enter

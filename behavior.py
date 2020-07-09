@@ -1,5 +1,5 @@
-from pynput.keyboard import Key, Controller as Key, KeyboardController
-from pynput.mouse import Button, Controller as Button, MouseController
+from pynput.keyboard import Key, Controller as KeyboardController
+from pynput.mouse import Button, Controller as MouseController
 
 SPECIALKEYS = {
     "lCtrl"     : Key.ctrl_l,
@@ -45,52 +45,52 @@ SPECIALKEYS = {
 
 class SingleKeyPress:
     _COMMAND = "press"
-    def execute(self, executionCommand: str, controller: KeyboardController):
+    def execute(self, executionCommand: str, keyboard: KeyboardController, mouse: MouseController):
         if len(executionCommand) > 1:
             executionCommand = SPECIALKEYS[executionCommand]
-        controller.press(executionCommand)
+        keyboard.press(executionCommand)
 
 class SingleKeyRelease:
     _COMMAND = "release"
-    def execute(self, executionCommand: str, controller: KeyboardController):
+    def execute(self, executionCommand: str, keyboard: KeyboardController, mouse: MouseController):
         if len(executionCommand) > 1:
             executionCommand = SPECIALKEYS[executionCommand]
-        controller.release(executionCommand)
+        keyboard.release(executionCommand)
 
 class SingleKeyStroke:
     _COMMAND = "stroke"
-    def execute(self, executionCommand: str, controller: KeyboardController):
+    def execute(self, executionCommand: str, keyboard: KeyboardController, mouse: MouseController):
         if len(executionCommand) > 1:
             executionCommand = SPECIALKEYS[executionCommand]
-        controller.press(executionCommand)
-        controller.release(executionCommand)
+        keyboard.press(executionCommand)
+        keyboard.release(executionCommand)
 
 class KeyChainPress:
     _COMMAND = "cPress"
-    def execute(self, executionCommand: str, controller: KeyboardController):
+    def execute(self, executionCommand: str, keyboard: KeyboardController, mouse: MouseController):
         executionCommand = [ key if len(key) == 1 else SPECIALKEYS[key] for key in executionCommand.split(' ') ]
         for key in executionCommand:
-            controller.press(key)
+            keyboard.press(key)
 
 class KeyChainRelease:
     _COMMAND = "cRelease"
-    def execute(self, executionCommand: str, controller: KeyboardController):
+    def execute(self, executionCommand: str, keyboard: KeyboardController, mouse: MouseController):
         executionCommand = [ key if len(key) == 1 else SPECIALKEYS[key] for key in executionCommand.split(' ') ]
         for key in executionCommand:
-            controller.release(key)
+            keyboard.release(key)
 
 class KeyChain:
     _COMMAND = "chain"
-    def execute(self, executionCommand: str, controller: KeyboardController):
+    def execute(self, executionCommand: str, keyboard: KeyboardController, mouse: MouseController):
         executionCommand = [ key if len(key) == 1 else SPECIALKEYS[key] for key in executionCommand.split(' ') ]
         for key in executionCommand:
-            controller.press(key)
+            keyboard.press(key)
         for key in executionCommand:
-            controller.release(key)
+            keyboard.release(key)
 
 class TypeText:
     _COMMAND = "type"
-    def execute(self, executionCommand: str, controller: KeyboardController):
+    def execute(self, executionCommand: str, keyboard: KeyboardController, mouse: MouseController):
         for key in executionCommand:
-            controller.press(key)
-            controller.release(key)
+            keyboard.press(key)
+            keyboard.release(key)

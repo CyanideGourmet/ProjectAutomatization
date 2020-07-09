@@ -1,5 +1,5 @@
-from behaviorExecution import BehaviorExecutor
+from behaviorExecution import BehaviorPattern
 
-executor = BehaviorExecutor()
-executor.setScript("script")
-executor.execute()
+executor = BehaviorPattern()
+executor.loadScript("script")
+executor.execute(2)
